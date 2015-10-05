@@ -13,6 +13,14 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    game.cpp \
+    observer.cpp \
+    subjectofobservation.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    color.h \
+    game.h \
+    gamestate.h \
+    observer.h \
+    subjectofobservation.h
