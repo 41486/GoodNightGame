@@ -1,6 +1,6 @@
 #ifndef GAMESTATE_H
 #define GAMESTATE_H
 
-enum class GameState {STOPPED, INITIALIZATION, RUNNING, FINISHED};
+enum class GameState {STOPPED, INITIALIZED, STARTED, FINISHED};
 
 #endif // GAMESTATE_H

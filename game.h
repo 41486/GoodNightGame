@@ -13,10 +13,13 @@ public:
     void initialize();
     void start();
 
+    void setNumberOfPlayers(int numberOfPlayers);
+
     GameState getState();
 
 private:
     GameState state;
+    int numberOfPlayers;
 };
 
 #endif // GAME_H
