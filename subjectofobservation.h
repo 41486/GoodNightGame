@@ -8,7 +8,7 @@
 
 #include <set>
 
-class Observer;
+#include "observer.h"
 
 /*!
  * \brief Classe de base de tout "sujet d'observation"

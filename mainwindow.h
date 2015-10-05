@@ -2,8 +2,14 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QMessageBox>
+#include <QInputDialog>
+#include <QLineEdit>
+#include <QString>
+#include <iostream>
 
 #include "game.h"
+#include "observer.h"
 
 class MainWindow : public QMainWindow, public Observer
 {
@@ -11,9 +17,10 @@ class MainWindow : public QMainWindow, public Observer
 
 public:
     MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+    virtual ~MainWindow();
 
-    void setGame(Game* game);
+    virtual void setGame(Game* game);
+    virtual void refresh(SubjectOfObservation * sob);
 
 private:
     Game* game;

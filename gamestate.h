@@ -1,8 +1,6 @@
 #ifndef GAMESTATE_H
 #define GAMESTATE_H
 
-enum class GameState {
+enum class GameState {STOPPED, INITIALIZATION, RUNNING, FINISHED};
 
-};
-
-#endif // COLOR
+#endif // GAMESTATE_H
