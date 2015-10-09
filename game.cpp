@@ -3,6 +3,7 @@
 Game::Game()
 {
     this->state = GameState::STOPPED;
+    this->dice = Dice;
 }
 
 Game::~Game()

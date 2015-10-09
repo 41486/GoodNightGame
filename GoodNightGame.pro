@@ -17,11 +17,15 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     game.cpp \
     observer.cpp \
-    subjectofobservation.cpp
+    subjectofobservation.cpp \
+    dice.cpp \
+    diceexception.cpp
 
 HEADERS  += mainwindow.h \
     color.h \
     game.h \
     observer.h \
     subjectofobservation.h \
-    gamestate.h
+    gamestate.h \
+    dice.h \
+    diceexception.h

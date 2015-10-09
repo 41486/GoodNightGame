@@ -18,7 +18,13 @@ void MainWindow::setGame(Game* game) {
 void MainWindow::refresh(SubjectOfObservation * sob) {
     if (sob == game) {
         if (game->getState() == GameState::INITIALIZED) {
-            int  numberOfPlayers = QInputDialog::getInt(this, "Nombre de joueur", "A combien souhaitez-vous jouer ?", 1, 1, 5);
+            bool ok = false;
+            int  numberOfPlayers = 0;
+            while (!ok) {
+
+                numberOfPlayers = QInputDialog::getInt(this, "Nombre de joueur", "A combien souhaitez-vous jouer ?", 1, 1, 5, 1, &ok);
+
+            }
 
             QMessageBox::information(this, "Nombre de joueur", "Vous avez choisi de jouer à " + QString::number(numberOfPlayers) + " joueurs");
 

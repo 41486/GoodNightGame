@@ -3,6 +3,7 @@
 
 #include "subjectofobservation.h"
 #include "gamestate.h"
+#include "dice.h"
 
 class Game : public SubjectOfObservation
 {
@@ -20,6 +21,7 @@ public:
 private:
     GameState state;
     int numberOfPlayers;
+    Dice dice;
 };
 
 #endif // GAME_H
