@@ -19,7 +19,11 @@ SOURCES += main.cpp\
     observer.cpp \
     subjectofobservation.cpp \
     dice.cpp \
-    diceexception.cpp
+    diceexception.cpp \
+    board.cpp \
+    case.cpp \
+    caseexception.cpp \
+    caselabel.cpp
 
 HEADERS  += mainwindow.h \
     color.h \
@@ -28,4 +32,9 @@ HEADERS  += mainwindow.h \
     subjectofobservation.h \
     gamestate.h \
     dice.h \
-    diceexception.h
+    diceexception.h \
+    board.h \
+    case.h \
+    casestate.h \
+    caseexception.h \
+    caselabel.h

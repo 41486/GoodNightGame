@@ -2,7 +2,7 @@
 #define COLOR_H
 
 enum class Color {
-    PURPLE, BLACK, YELLOW, GREEN, BLUE
+    PURPLE, BLACK, RED, GREEN, BLUE, NONE
 };
 
 #endif // COLOR

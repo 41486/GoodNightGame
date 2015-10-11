@@ -7,9 +7,10 @@ Dice::Dice(int maxValue)
     this->maxValue = maxValue;
 }
 
-void Dice::roll()
+int Dice::roll()
 {
-    this->value = (rand()%6)+1;
+    this->value = (rand()%this->maxValue)+1;
+    return this->value;
 }
 
 int Dice::getValue()

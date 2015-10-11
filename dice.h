@@ -14,7 +14,7 @@ class Dice
 public:
     Dice(int maxValue);
 
-    void roll();
+    int roll();
 
     int getValue();
 };
