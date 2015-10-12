@@ -21,6 +21,7 @@
 #include <QEvent>
 #include <QMenu>
 #include <QMenuBar>
+#include <QDir>
 
 #include "caselabel.h"
 #include "game.h"
@@ -110,6 +111,7 @@ private:
     QGridLayout* layout;
 
     QLabel *diceResult;
+    QLabel *activePlayer;
     QPushButton *rollDice;
     QPushButton *switchLight;
 

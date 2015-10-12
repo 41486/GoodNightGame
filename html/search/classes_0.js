@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['board',['Board',['../classBoard.html',1,'']]],
-  ['boardexception',['BoardException',['../classBoardException.html',1,'']]]
+  ['board',['Board',['../class_board.html',1,'']]],
+  ['boardexception',['BoardException',['../class_board_exception.html',1,'']]]
 ];

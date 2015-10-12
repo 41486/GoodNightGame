@@ -25,7 +25,8 @@ SOURCES += main.cpp\
     star.cpp \
     boardexception.cpp \
     starexception.cpp \
-    gameexception.cpp
+    gameexception.cpp \
+    color.cpp
 
 HEADERS  += mainwindow.h \
     color.h \
@@ -42,3 +43,6 @@ HEADERS  += mainwindow.h \
     boardexception.h \
     starexception.h \
     gameexception.h
+
+RESOURCES += \
+    img.qrc

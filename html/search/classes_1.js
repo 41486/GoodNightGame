@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['caselabel',['CaseLabel',['../classCaseLabel.html',1,'']]]
+  ['caselabel',['CaseLabel',['../class_case_label.html',1,'']]]
 ];

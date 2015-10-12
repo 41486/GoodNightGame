@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['game',['Game',['../classGame.html',1,'']]],
-  ['gameexception',['GameException',['../classGameException.html',1,'']]]
+  ['game',['Game',['../class_game.html',1,'']]],
+  ['gameexception',['GameException',['../class_game_exception.html',1,'']]]
 ];

@@ -55,6 +55,16 @@ public:
     void addStar(int x, Color color);
 
     /*!
+     *  \brief Ajoute une étoile à la matrice
+     *
+     *  Ajoute une étoile à la plus petite abscisse de l'ordonnée passée en paramètre
+     *
+     *  \param x : ordonnée à laquelle ajouter l'étoile
+     *  \param color : couleur de (faisant partie de l'énumaration Color) de l'étoile
+     */
+    void addStar(int x, int y, Color color);
+
+    /*!
      *  \brief Retourne l'étoile
      *
      *  Retourne l'étoile (elle passera de face visible à face cachée ou inversement)
@@ -99,6 +109,19 @@ public:
      *  \return int : nombre d'étoile non vide présentes dans la matrice
      */
     int getNumberOfStars();
+
+    /*!
+     *  \brief Retourne le nombre d'étoile présente dans la matrice
+     *
+     *  Retourne le nombre d'étoile présente dans la matrice (les étoiles ayant le statut "vide" ne
+     *  sont pas comptées).
+     *
+     *  \param x : coordonée ordonnée de l'étoile
+     *  \param y : coordonée abscisse de l'étoile
+     *
+     *  \return int : nombre d'étoile non vide présentes dans la matrice
+     */
+    Color getLastColorLeft();
 
 private:
     Star*** stars;

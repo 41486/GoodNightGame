@@ -32,6 +32,14 @@ void Board::addStar(int x, Color color) {
     this->numberOfStars++;
 }
 
+void Board::addStar(int x, int y, Color color) {
+    if (stars[x][y]->getState() != StarState::EMPTY) {
+        throw new BoardException("Il n'y a pas de place pour ajouter une étoile ici");
+    }
+    stars[x][y]->setColor(color);
+    this->numberOfStars++;
+}
+
 Star*** Board::getBoard() {
     return this->stars;
 }
@@ -60,4 +68,24 @@ Star* Board::getStar(int x, int y) {
 
 int Board::getNumberOfStars() {
     return this->numberOfStars;
+}
+
+Color Board::getLastColorLeft() {
+    Color winnerColor = Color::NONE;
+    if (this->getNumberOfStars() == 1) {
+        for (int i = 0; i<9; ++i) {
+            for (int j = 0; j<5; ++j) {
+                if(stars[i][j]->getState() == StarState::FRONT) {
+                    winnerColor = stars[i][j]->getColor();
+                    break;
+                }
+            }
+            if (winnerColor != Color::NONE) {
+                break;
+            }
+        }
+    } else {
+        throw new BoardException("Il reste plus d'une étoile sur le plateau !");
+    }
+    return winnerColor;
 }

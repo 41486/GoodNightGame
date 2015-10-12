@@ -13,9 +13,11 @@ Game::~Game() {}
 void Game::initialize()
 {
     if (this->getState() == GameState::STOPPED) {
+        // Si le jeu était bien à l'état arrêté, on indique que la partie s'initialise et on notifie les observateurs
         this->state = GameState::INITIALIZED;
         this->notify();
     } else {
+        // Sinon on lance une exception
         throw new GameException("Appel à la méthode initialize() au mauvais moment de la partie");
     }
 }
@@ -23,6 +25,7 @@ void Game::initialize()
 void Game::setNumberOfPlayers(int numberOfPlayers)
 {
     if (this->getState() == GameState::INITIALIZED) {
+        // Si le jeu était bien à l'état initialisé, simule les joueurs absents
         int diceResult;
         for (int j=0; j<3; ++j) {
             for (int i=numberOfPlayers; i<5; ++i) {
@@ -31,10 +34,12 @@ void Game::setNumberOfPlayers(int numberOfPlayers)
                  this->board.addStar(this->drop, colorList[i]);
             }
         }
+        // Puis on indique le nombre de joueur, le nombre de tours totaux restants et le joueur actif
         this->numberOfPlayers = numberOfPlayers;
-        this->numberOfTurnLeft = 3;
+        this->numberOfTurnLeft = 3*numberOfPlayers;
         this->activePlayer = 0;
     } else {
+        // Sinon on lance une exception
         throw new GameException("Appel à la méthode setNumberOfPlayers() au mauvais moment de la partie");
     }
 }
@@ -60,15 +65,7 @@ void Game::rollDice()
             lastRoll = this->dice.roll();
             this->drop = (this->drop+lastRoll)%9;
 
-            this->placeStar(this->drop, colorList[activePlayer]);
-
-            if (activePlayer == this->numberOfPlayers-1) {
-                numberOfTurnLeft--;
-                if (numberOfTurnLeft == 0) {
-                    this->state = GameState::WAITING;
-                }
-            }
-            activePlayer = (activePlayer+1)%this->numberOfPlayers;
+            numberOfTurnLeft--;
 
             this->notify();
         }
@@ -77,9 +74,18 @@ void Game::rollDice()
     }
 }
 
-void Game::placeStar(int x, Color color)
+void Game::placeStar(int x)
 {
-    this->board.addStar(x, color);
+    try {
+        this->board.addStar(drop, x, colorList[activePlayer]);
+        activePlayer = (activePlayer+1)%this->numberOfPlayers;
+        if (numberOfTurnLeft == 0) {
+            this->state = GameState::WAITING;
+        }
+    } catch (GameException *e) {
+        throw;
+    }
+    this->notify();
 }
 
 void Game::switchLight()
@@ -89,6 +95,18 @@ void Game::switchLight()
 
         if (!this->light) {
             this->state = GameState::PHASE2;
+        } else {
+            Color winnerColor = this->board.getLastColorLeft();
+
+            int i = 0;
+            while (colorList[i] != winnerColor) {
+                ++i;
+            }
+            if (i < numberOfPlayers) {
+                this->winner = winnerColor;
+            } else {
+                this->winner = Color::NONE;
+            }
         }
 
         this->notify();
@@ -102,6 +120,7 @@ void Game::turnBackStar(int x, int y)
     if (this->getState() == GameState::PHASE2) {
         if (this->board.getStar(x,y)->getState() == StarState::FRONT) {
             this->board.turnBackStar(x, y);
+            activePlayer = (activePlayer+1)%this->numberOfPlayers;
             if (this->board.getNumberOfStars() == 1) {
                 this->state = GameState::FINISHED;
             }
@@ -136,4 +155,18 @@ int Game::getDropPos()
 int Game::getLastRoll()
 {
     return this->lastRoll;
+}
+
+Color Game::getActivePlayer()
+{
+    return this->colorList[activePlayer];
+}
+
+Color Game::getWinner()
+{
+    if (this->getState() == GameState::FINISHED) {
+        return this->winner;
+    } else {
+        throw new GameException("Appel à la méthode getWinner() au mauvais moment de la partie, aucun gagnant encore");
+    }
 }

@@ -91,7 +91,7 @@ public:
      *  \param x : ordonnée où placer l'étoile
      *  \param color : couleur (de l'énumération Color) de l'étoile à placer
      */
-    void placeStar(int x, Color color);
+    void placeStar(int x);
 
     /*!
      *  \brief Permet d'éteindre ou allumer la lumière
@@ -155,10 +155,29 @@ public:
      */
     int getLastRoll();
 
+    /*!
+     *  \brief Retourne la couleur du joueur actif (la personne qui doit jouer)
+     *
+     *  Permet de savoir la couleur du joueur actif (la personne qui doit jouer)
+     *
+     *  \return couleur du joueur actif (parmis les couleurs de l'énumération Color)
+     */
+    Color getActivePlayer();
+
+    /*!
+     *  \brief Retourne la couleur du joueur gagnant
+     *
+     *  Permet de savoir la couleur du joueur gagnant
+     *
+     *  \return couleur du joueur gagnant
+     */
+    Color getWinner();
+
 private:
     int numberOfPlayers;
     int numberOfTurnLeft;
     int activePlayer;
+    Color winner;
 
     Dice dice;
 
@@ -167,6 +186,8 @@ private:
     Board board;
 
     bool light;
+
+    int rollDiceOrPlaceStar; // Attribut permettant de vérifier si le joueur doit lancer le dé ou placer une étoile, non implémenté
 
     int drop;
     int lastRoll;

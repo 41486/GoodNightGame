@@ -7,9 +7,13 @@
  * \author G41486
  */
 
+#include <QString>
+
 enum class Color {
     PURPLE, BLACK, RED, GREEN, BLUE, NONE
 };
+
+QString getQStrColor(Color color);
 
 #endif // COLOR
 

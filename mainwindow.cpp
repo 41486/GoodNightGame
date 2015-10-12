@@ -5,21 +5,23 @@ MainWindow::MainWindow(QWidget *parent) :
                                     game(nullptr),
                                     centralWidget(new QWidget()), // Widget du contenu de la fenêtre
                                     layout(new QGridLayout()), // Layout de la fenêtre
-                                    diceResult(new QLabel()), // Label affichant le résultat du dé
+                                    diceResult(new QLabel(this)), // Label affichant le résultat du dé
+                                    activePlayer(new QLabel(this)), // Label affichant le joueur actif
                                     rollDice(new QPushButton("Lancer le dé", this)), // Bouton pour lancer le dé
-                                    switchLight(new QPushButton("Interrupteur", this)), // Bouton pour éteindre/allumer la lumière
-                                    // Création des pixmap nécessaires
-                                    emptyPixmap(new QPixmap("img/empty.png")),
-                                    dropPixmap(new QPixmap("img/drop.png")),
-                                    noDropPixmap( new QPixmap("img/no_drop.png")),
-                                    starBlackPixmap(new QPixmap("img/star_black.png")),
-                                    starPurplePixmap(new QPixmap("img/star_purple.png")),
-                                    starRedPixmap(new QPixmap("img/star_red.png")),
-                                    starBluePixmap(new QPixmap("img/star_blue.png")),
-                                    starGreenPixmap(new QPixmap("img/star_green.png")),
-                                    starNightPixmap(new QPixmap("img/star_night.png")),
-                                    starDownPixmap(new QPixmap("img/star_down.png"))
+                                    switchLight(new QPushButton("Interrupteur", this)) // Bouton pour éteindre/allumer la lumière
 {
+    // Création des pixmap nécessaires
+    emptyPixmap = new QPixmap(":img/empty.png");
+    dropPixmap = new QPixmap(":img/drop.png");
+    noDropPixmap = new QPixmap(":img/no_drop.png");
+    starBlackPixmap = new QPixmap(":img/star_black.png");
+    starPurplePixmap = new QPixmap(":img/star_purple.png");
+    starRedPixmap = new QPixmap(":img/star_red.png");
+    starBluePixmap = new QPixmap(":img/star_blue.png");
+    starGreenPixmap = new QPixmap(":img/star_green.png");
+    starNightPixmap = new QPixmap(":img/star_night.png");
+    starDownPixmap = new QPixmap(":img/star_down.png");
+
     this->setWindowTitle("Bonne nuit !");
 
     // Mise en place du layout
@@ -28,6 +30,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Ajout du bouton diceResult affichant le résultat du lancé de dé au layout
     layout->addWidget(diceResult, 0, 0, Qt::AlignCenter);
+
+    // Ajout du bouton activePlayer affichant le joueur dont c'est le tour
+    layout->addWidget(activePlayer, 0, 5, Qt::AlignCenter);
 
     // Configuration et ajout au layout du bouton permettant de lancer le dé
     rollDice->setEnabled(false);
@@ -69,6 +74,7 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     if (this->game != nullptr) {
+        game->detach(this);
         delete game;
     }
 
@@ -79,10 +85,6 @@ MainWindow::~MainWindow()
         delete stars[i];
     }
     delete stars;
-
-    delete diceResult;
-    delete rollDice;
-    delete switchLight;
 
     delete emptyPixmap;
     delete dropPixmap;
@@ -95,24 +97,23 @@ MainWindow::~MainWindow()
     delete starNightPixmap;
     delete starDownPixmap;
     delete layout;
-
-    delete fileMenu;
-    delete newAction;
-    delete quitAction;
 }
 
 void MainWindow::newGame() {
+    // Si aucune partie était déjà créée, on la supprime avant d'en créer une nouvelle
     if (this->game != nullptr) {
         delete this->game;
     }
     this->game = new Game();
+
+    // On indique à l'objet Game qu'on souhaite l'observer
     this->game->attach(this);
 
-    diceResult->setText("");
+    // On désactive les boutons
     rollDice->setEnabled(false);
     switchLight->setEnabled(false);
 
-    // On lie ensuite les bonnes images aux bonnes cases : la première colonne contiendra la goute
+    // On lie ensuite les images à la matrice de QLabel : la première colonne contiendra la goute
     for (unsigned int i = 0; i < 9; ++i) {
         stars[i][0]->setPixmap(*noDropPixmap);
 
@@ -132,16 +133,33 @@ void MainWindow::newGame() {
         }
     }
 
+    // On indique à l'objet Game qu'on est prêt à lancer la partie
     this->game->initialize();
 }
 
 void MainWindow::updateBoard() {
-    Star*** board = game->getBoard();
-
+    // Mise à jour de la dernière valeur du dé, elle n'est affichée qu'à la première phase car elle n'a pas de sens autrement
     if (game->getState() == GameState::PHASE1) {
         this->diceResult->setText(QString::number(game->getLastRoll()));
+    } else {
+        this->diceResult->setText("/");
     }
 
+    // Mise à jour du joueur actif, il n'est affiché qu'à la phase 1 ou 2 car il n'a pas de sens autrement
+    if (game->getState() == GameState::PHASE1 || game->getState() == GameState::PHASE2) {
+
+        this->activePlayer->setText("Joueur actif:\n"+getQStrColor(game->getActivePlayer()));
+
+    }
+
+    // Mise à jour du gagnant, il n'est affiché qu'une fois la partie finie
+    if (game->getState() == GameState::FINISHED && game->isLightOn()) {
+
+        this->activePlayer->setText("Gagnant:\n"+getQStrColor(game->getWinner()));
+
+    }
+
+    // Mise à jour de la position de la goute
     unsigned int dropPos = game->getDropPos();
     for (unsigned int i = 0; i < 9; ++i) {
         if (i == dropPos) {
@@ -151,6 +169,10 @@ void MainWindow::updateBoard() {
         }
     }
 
+    // On va chercher la matrice des étoiles pour l'afficher
+    Star*** board = game->getBoard();
+
+    // On affiche la matrice d'étoile
     for (unsigned int i = 0; i < 9; ++i) {
         for (unsigned int j = 0; j < 5; ++j) {
             if (board[i][j]->getState() == StarState::EMPTY) {
@@ -181,6 +203,7 @@ void MainWindow::updateBoard() {
 void MainWindow::refresh(SubjectOfObservation * sob) {
     if (sob == game) {
         if (game->getState() == GameState::INITIALIZED) {
+            // Si on vient d'initialiser la partie, on demande le nombre de joueurs
             bool ok = false;
             int  numberOfPlayers = 0;
             while (!ok) {
@@ -189,22 +212,28 @@ void MainWindow::refresh(SubjectOfObservation * sob) {
 
             }
 
+            // On indique à l'objet Game le nombre de joueur
             game->setNumberOfPlayers(numberOfPlayers);
 
+            // On peut ensuite commencer la partie
             game->start();
 
+            // Une fois la partie commencé on peut activer le bouton pour lancer le dé et que le premier joueur commence
             rollDice->setEnabled(true);
         } else if (game->getState() == GameState::PHASE1) {
-            // Rien à faire
+            // Rien à faire, les slots gèrent le jeu
         } else if (game->getState() == GameState::WAITING) {
+            // Tous les joueurs ont placés leurs étoiles, on active donc le bouton pour allumer la lumière
             rollDice->setEnabled(false);
-
+            // et on désactive le bouton du dé
             switchLight->setEnabled(true);
         } else if (game->getState() == GameState::PHASE2) {
+            // On continue sur la phase 2, le dé est toujours inutile
             rollDice->setEnabled(false);
-
+            // On ne peut pas allumer la lumière avant la fin de partie, on désactive le bouton
             switchLight->setEnabled(false);
         } else if (game->getState() == GameState::FINISHED) {
+            // Lorsqu'il ne reste qu'une étoile, le bouton pour allumer la lumière est de nouveau disponible
             switchLight->setEnabled(true);
         }
         this->updateBoard();
@@ -213,19 +242,39 @@ void MainWindow::refresh(SubjectOfObservation * sob) {
 
 void MainWindow::caseLabelClicked(int x, int y)
 {
-    try {
-        this->game->turnBackStar(x,y-1);
-    } catch (GameException *e) {
-        // QMessageBox::critical(this, "Erreur dans le jeu", e->what());
-        // Rien à afficher car l'utilisateur peut cliquer accidentellement sur une étoile à
-        // n'importe quel moment de la partie
+    // Si on est à la 1er phase et que le bouton pour lancer le dé est désactivé (donc que le dé vient d'être lancé), on peut mettre son étoile
+    if (this->game->getState() == GameState::PHASE1 && !this->rollDice->isEnabled()) {
+        try {
+            this->game->placeStar(y-1);
+
+            if (this->game->getState() == GameState::PHASE1) {
+                // Si on est toujours à la phase 1 (que ce n'était pas au dernier tour du dernier joueur), on réactive le bouton pour lancer le dé
+                // pour le suivant.
+                this->rollDice->setEnabled(true);
+            }
+        } catch (GameException *e) {
+            QMessageBox::critical(this, "Erreur dans le jeu", e->what());
+        } catch (BoardException *e) {
+            // Si la place sur laquelle on a déjà cliqué est prise, un message nous averti et on recommence
+            QMessageBox::critical(this, "Erreur dans le plateau de jeu", e->what());
+        }
+    // Si on est à la 2ème phase, on va retourner les étoiles une par une.
+    } else if (this->game->getState() == GameState::PHASE2) {
+        try {
+            this->game->turnBackStar(x,y-1);
+        } catch (GameException *e) {
+            QMessageBox::critical(this, "Erreur dans le jeu", e->what());
+        }
     }
 }
 
 void MainWindow::rollDiceClicked()
 {
     try {
+        // On indique à l'objet Game qu'on souhaite lancer le dé
         this->game->rollDice();
+        // On désactive le bouton car le joueur va devoir placer son étoile avant que le suivant joue
+        this->rollDice->setEnabled(false);
     } catch (GameException *e) {
         QMessageBox::critical(this, "Erreur dans le jeu", e->what());
     }
@@ -234,8 +283,10 @@ void MainWindow::rollDiceClicked()
 void MainWindow::switchLightClicked()
 {
     try {
+        // On indique au jeu qu'on souhaite changer l'état de la lumière
         this->game->switchLight();
         if (game->getState() == GameState::FINISHED) {
+            // Si on est à la fin du jeu, il faut désactiver le bouton pour ne pas que les utilisateurs jouent avec la lumière
             switchLight->setEnabled(false);
         }
     } catch (GameException *e) {

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['placestar',['placeStar',['../classGame.html#a90439a269ef449c12bf952d0767e9444',1,'Game']]]
+  ['placestar',['placeStar',['../class_game.html#a69864041ec898c16774ae9fb2c75472b',1,'Game']]]
 ];
