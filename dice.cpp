@@ -16,7 +16,7 @@ int Dice::roll()
 int Dice::getValue()
 {
     if (this->value == 0) {
-        throw new DiceException();
+        throw new DiceException("Le dé n'a pas encore été lancé");
     }
     return this->value;
 }

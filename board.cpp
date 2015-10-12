@@ -1,35 +1,61 @@
 #include "board.h"
 
 Board::Board() : numberOfStars(0) {
-    cases = new Case*[9];
+    stars = new Star**[9];
     for (int i = 0; i<9; ++i) {
-        cases[i] = new Case[5];
+        stars[i] = new Star*[5];
         for (int j = 0; j<5; ++j) {
-            cases[i][j] = Case();
+            stars[i][j] = new Star();
         }
     }
 }
 
-void Board::addStar(int x, Color color) {
-    int y = 0;
-    while (cases[x][y].getState() != CaseState::EMPTY) {
-        y++;
+Board::~Board() {
+    for (int i = 0; i<9; ++i) {
+        for (int j = 0; j<5; ++j) {
+            delete stars[i][j];
+        }
+        delete stars[i];
     }
-    cases[x][y].setStar(color);
-    this->numberOfStars++;
-    std::cout << this->numberOfStars << std::endl;
+    delete stars;
 }
 
-Case** Board::getBoard() {
-    return this->cases;
+void Board::addStar(int x, Color color) {
+    int y = 0;
+    while (stars[x][y]->getState() != StarState::EMPTY) {
+        y++;
+    }
+    if (y == 5) {
+        throw new BoardException("Il n'y a plus de place pour ajouter une étoile ici");
+    }
+    stars[x][y]->setColor(color);
+    this->numberOfStars++;
+}
+
+Star*** Board::getBoard() {
+    return this->stars;
+}
+
+void Board::turnBackStar(int x, int y) {
+    try {
+        stars[x][y]->turnBack();
+        this->numberOfStars--;
+    } catch (StarException &e) {
+        throw;
+    }
 }
 
 void Board::dropStar(int x, int y) {
-    if (cases[x][y].getState() != CaseState::EMPTY) {
-        cases[x][y].empty();
+    try {
+        stars[x][y]->drop();
         this->numberOfStars--;
-        std::cout << this->numberOfStars << std::endl;
+    } catch (StarException &e) {
+        throw;
     }
+}
+
+Star* Board::getStar(int x, int y) {
+    return stars[x][y];
 }
 
 int Board::getNumberOfStars() {

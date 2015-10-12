@@ -1,6 +1,6 @@
 #include "game.h"
 
-Game::Game() : numberOfPlayers(-1), dice(3), state(GameState::STOPPED), board(), light(true), drop(0), colorList(std::vector<Color>()) {
+Game::Game() : numberOfPlayers(0), dice(3), state(GameState::STOPPED), board(), light(true), drop(0), lastRoll(0), colorList(std::vector<Color>()) {
     colorList.push_back(Color::BLACK);
     colorList.push_back(Color::PURPLE);
     colorList.push_back(Color::RED);
@@ -8,31 +8,59 @@ Game::Game() : numberOfPlayers(-1), dice(3), state(GameState::STOPPED), board(),
     colorList.push_back(Color::BLUE);
 }
 
-Game::~Game()
-{
-
-}
+Game::~Game() {}
 
 void Game::initialize()
 {
-    this->state = GameState::INITIALIZED;
-    this->notify();
+    if (this->getState() == GameState::STOPPED) {
+        this->state = GameState::INITIALIZED;
+        this->notify();
+    } else {
+        throw new GameException("Appel à la méthode initialize() au mauvais moment de la partie");
+    }
+}
+
+void Game::setNumberOfPlayers(int numberOfPlayers)
+{
+    if (this->getState() == GameState::INITIALIZED) {
+        int diceResult;
+        for (int j=0; j<3; ++j) {
+            for (int i=numberOfPlayers; i<5; ++i) {
+                 diceResult = this->dice.roll();
+                 this->drop = (this->drop+diceResult)%9;
+                 this->board.addStar(this->drop, colorList[i]);
+            }
+        }
+        this->numberOfPlayers = numberOfPlayers;
+        this->numberOfTurnLeft = 3;
+        this->activePlayer = 0;
+    } else {
+        throw new GameException("Appel à la méthode setNumberOfPlayers() au mauvais moment de la partie");
+    }
 }
 
 void Game::start()
 {
-    this->state = GameState::PHASE1;
-    this->notify();
+    if (this->getState() == GameState::INITIALIZED) {
+        if (this->numberOfPlayers != 0) {
+            this->state = GameState::PHASE1;
+            this->notify();
+        } else {
+            throw new GameException("Impossible de démarrer la partie : nombre de joueurs indéfini");
+        }
+    } else {
+        throw new GameException("Appel à la méthode start() au mauvais moment de la partie");
+    }
 }
 
 void Game::rollDice()
 {
     if (this->getState() == GameState::PHASE1) {
         if (numberOfTurnLeft > 0) {
-            int i = this->dice.roll();
-            this->drop = (this->drop+i)%9;
+            lastRoll = this->dice.roll();
+            this->drop = (this->drop+lastRoll)%9;
 
-            this->board.addStar(this->drop, colorList[activePlayer]);
+            this->placeStar(this->drop, colorList[activePlayer]);
 
             if (activePlayer == this->numberOfPlayers-1) {
                 numberOfTurnLeft--;
@@ -44,79 +72,58 @@ void Game::rollDice()
 
             this->notify();
         }
+    } else {
+        throw new GameException("Appel à la méthode rollDice() au mauvais moment de la partie");
     }
 }
 
-void Game::placeStar(int x, int y)
+void Game::placeStar(int x, Color color)
 {
-
+    this->board.addStar(x, color);
 }
 
 void Game::switchLight()
 {
-    this->light = !this->light;
+    if (this->getState() == GameState::WAITING || this->getState() == GameState::FINISHED) {
+        this->light = !this->light;
 
-    if (!this->light) {
-        this->state = GameState::PHASE2;
-        Case** board = this->board.getBoard();
-        for (int i = 0; i<9; ++i) {
-            for (int j = 0; j<5; ++j) {
-                if (board[i][j].getState() == CaseState::FRONT) {
-                    board[i][j].turnBack();
-                }
-            }
+        if (!this->light) {
+            this->state = GameState::PHASE2;
         }
-    } else {
-        Case** board = this->board.getBoard();
-        for (int i = 0; i<9; ++i) {
-            for (int j = 0; j<5; ++j) {
-                if (board[i][j].getState() == CaseState::BACK) {
-                    board[i][j].turnBack();
-                }
-            }
-        }
+
+        this->notify();
+    } else  {
+        throw new GameException("Appel à la méthode switchLight() au mauvais moment de la partie");
     }
-
-    this->notify();
 }
 
-void Game::dropStar(int x, int y)
+void Game::turnBackStar(int x, int y)
 {
     if (this->getState() == GameState::PHASE2) {
-        this->board.dropStar(x, y);
-        if (this->board.getNumberOfStars() == 1) {
-            this->state = GameState::FINISHED;
+        if (this->board.getStar(x,y)->getState() == StarState::FRONT) {
+            this->board.turnBackStar(x, y);
+            if (this->board.getNumberOfStars() == 1) {
+                this->state = GameState::FINISHED;
+            }
+            this->notify();
         }
-        this->notify();
+    } else {
+        throw new GameException("Appel à la méthode turnBackStar() au mauvais moment de la partie");
     }
 }
 
-void Game::setNumberOfPlayers(int numberOfPlayers)
-{
-    int diceResult;
-    for (int j=0; j<3; ++j) {
-        for (int i=numberOfPlayers; i<5; ++i) {
-             diceResult = this->dice.roll();
-             this->drop = (this->drop+diceResult)%9;
-             this->board.addStar(this->drop, colorList[i]);
-        }
-    }
-    this->numberOfPlayers = numberOfPlayers;
-    this->numberOfTurnLeft = 3;
-    this->activePlayer = 0;
-}
 
 GameState Game::getState()
 {
     return this->state;
 }
 
-Case** Game::getBoard()
+Star*** Game::getBoard()
 {
     return this->board.getBoard();
 }
 
-bool Game::getLight()
+bool Game::isLightOn()
 {
     return this->light;
 }
@@ -124,4 +131,9 @@ bool Game::getLight()
 int Game::getDropPos()
 {
     return this->drop;
+}
+
+int Game::getLastRoll()
+{
+    return this->lastRoll;
 }

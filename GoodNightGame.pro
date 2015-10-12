@@ -21,9 +21,11 @@ SOURCES += main.cpp\
     dice.cpp \
     diceexception.cpp \
     board.cpp \
-    case.cpp \
-    caseexception.cpp \
-    caselabel.cpp
+    caselabel.cpp \
+    star.cpp \
+    boardexception.cpp \
+    starexception.cpp \
+    gameexception.cpp
 
 HEADERS  += mainwindow.h \
     color.h \
@@ -34,7 +36,9 @@ HEADERS  += mainwindow.h \
     dice.h \
     diceexception.h \
     board.h \
-    case.h \
-    casestate.h \
-    caseexception.h \
-    caselabel.h
+    caselabel.h \
+    star.h \
+    starstate.h \
+    boardexception.h \
+    starexception.h \
+    gameexception.h

@@ -8,5 +8,7 @@ CaseLabel::CaseLabel(int x, int y)
 
 void CaseLabel::mousePressEvent(QMouseEvent * event)
 {
-    emit clicked(this->x,this->y);
+    if(event->button() == Qt::LeftButton) {
+        emit clicked(this->x,this->y);
+    }
 }

@@ -1,10 +1,11 @@
-/*!
- * \file sujetdobservation.h
- * \brief Définition de la classe SujetDObservation.
- */
+#ifndef SUBJECTOFOBSERVATION_H
+#define SUBJECTOFOBSERVATION_H
 
-#ifndef __SUBJECTOFOBSERVATION__H__
-#define __SUBJECTOFOBSERVATION__H__
+/*!
+ * \file subjectofobservation.h
+ * \brief Fichier de classe sujet d'observation
+ * \author GOF (?)
+ */
 
 #include <set>
 
@@ -17,7 +18,6 @@
  * (ou "sujet d'observation") du modèle de conception
  * "Observateur / SujetDObservation".
  *
- * \author GOF (?).
  * \sa Observateur.
  */
 class SubjectOfObservation

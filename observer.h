@@ -1,10 +1,11 @@
-/*!
- * \file observateur.h
- * \brief Définition de la classe Observateur.
- */
+#ifndef OBSERVER_H
+#define OBSERVER_H
 
-#ifndef __OBSERVER__H__
-#define __OBSERVER__H__
+/*!
+ * \file observer.h
+ * \brief Fichier de classe observateur
+ * \author GOF (?)
+ */
 
 class SubjectOfObservation;
 
@@ -14,7 +15,6 @@ class SubjectOfObservation;
  * Classe dont dérive tout écouteur (ou "observateur") du modèle de
  * conception "Observateur / SujetDObservation".
  *
- * \author GOF (?).
  * \sa SujetDObservation.
  */
 

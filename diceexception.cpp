@@ -1,7 +1,9 @@
 #include "diceexception.h"
 
-DiceException::DiceException() {}
+DiceException::DiceException(const char* msg) {
+    this->msg = msg;
+}
 
 const char* DiceException::what() const throw() {
-    return "Le dé n'a pas été lancé";
+    return this->msg;
 }
